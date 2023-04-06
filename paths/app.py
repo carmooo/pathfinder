@@ -1,6 +1,11 @@
-import heapq
 import tkinter as tk
-from collections import deque
+from tkinter import messagebox
+
+DEFAULT_NODE_COLOR = "#264653"
+SOURCE_NODE_COLOR = "#E9C46A"
+DESTINATION_NODE_COLOR = "#E76F51"
+OBSTACLE_NODE_COLOR = "#F4A261"
+PATH_NODE_COLOR = "#2A9D8F"
 
 
 class GridApp:
@@ -28,9 +33,6 @@ class GridApp:
         self.btn = tk.Button(self.root, text='Find Shortest Path', command=self.find_shortest_path)
         self.btn.pack()
 
-        # self.reset_btn = tk.Button(self.root, text='Reset', command=self.__init__(self.n, self.m))
-        # self.reset_btn.pack()
-
         self.root.mainloop()
 
     def draw_grid(self):
@@ -40,13 +42,17 @@ class GridApp:
                 y1 = j * self.square_size
                 x2 = x1 + self.square_size
                 y2 = y1 + self.square_size
-                color = 'blue' if self.square_states[i][j] else 'white'
-                if self.path_squares[i][j]:
-                    color = 'yellow'
+
+                if self.square_states[i][j]:
+                    color = OBSTACLE_NODE_COLOR
+                else:
+                    color = PATH_NODE_COLOR if self.path_squares[i][j] else DEFAULT_NODE_COLOR
+
                 if (i, j) == self.source_node:
-                    color = 'red'
+                    color = SOURCE_NODE_COLOR
                 if (i, j) == self.destination_node:
-                    color = 'green'
+                    color = DESTINATION_NODE_COLOR
+
                 self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline='black')
 
     def on_square_click(self, event):
@@ -81,6 +87,8 @@ class GridApp:
         self.is_dragging_destination = False
 
     def find_shortest_path(self):
+        # Erase possible older paths
+        self.path_squares = [[False for _ in range(self.m)] for _ in range(self.n)]
         # Create a set to store visited nodes
         visited = set()
         # Create a dictionary to store the distance from the source node to each node
@@ -135,10 +143,10 @@ class GridApp:
             self.canvas.delete('all')
             self.draw_grid()
         else:
-            print("No path found")
+            messagebox.showinfo("No Path Found", "No path found from source to destination.")
 
 
 if __name__ == '__main__':
-    n = 15  # Number of rows
-    m = 22  # Number of columns
+    n = 30  # Number of rows
+    m = 20  # Number of columns
     app = GridApp(n, m)
