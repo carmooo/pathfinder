@@ -147,6 +147,16 @@ class GridApp:
 
 
 if __name__ == '__main__':
-    n = 30  # Number of rows
-    m = 20  # Number of columns
-    app = GridApp(n, m)
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--width', type=int, help='width of the rectangle')
+    parser.add_argument('--height', type=int, help='height of the rectangle')
+    args = parser.parse_args()
+
+    if args.width and args.height:
+        n = args.width  # Number of rows
+        m = args.height  # Number of columns
+        app = GridApp(n, m)
+    else:
+        print('Please provide both width and height.')
