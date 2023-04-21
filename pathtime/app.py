@@ -87,7 +87,7 @@ class GridApp:
         self.is_dragging_destination = False
 
     def find_shortest_path(self):
-        # Erase possible older paths
+        # Erase possible older pathtime
         self.path_squares = [[False for _ in range(self.m)] for _ in range(self.n)]
         # Create a set to store visited nodes
         visited = set()
