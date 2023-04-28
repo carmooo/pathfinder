@@ -17,20 +17,27 @@ class GridApp:
         self.destination_node = (n - 1, m - 1)
         self.is_dragging_source = False
         self.is_dragging_destination = False
-        self.square_colors = [['white' for _ in range(self.m)] for _ in range(self.n)]
+        self.square_colors = [["white" for _ in range(self.m)] for _ in range(self.n)]
         self.square_states = [[False for _ in range(self.m)] for _ in range(self.n)]
         self.path_squares = [[False for _ in range(self.m)] for _ in range(self.n)]
 
         self.root = tk.Tk()
-        self.canvas = tk.Canvas(self.root, width=self.n * self.square_size, height=self.m * self.square_size, bg='white')
+        self.canvas = tk.Canvas(
+            self.root,
+            width=self.n * self.square_size,
+            height=self.m * self.square_size,
+            bg="white",
+        )
         self.canvas.pack()
-        self.canvas.bind('<Button-1>', self.on_square_click)
-        self.canvas.bind('<B1-Motion>', self.on_square_drag)
-        self.canvas.bind('<ButtonRelease-1>', self.on_square_release)
+        self.canvas.bind("<Button-1>", self.on_square_click)
+        self.canvas.bind("<B1-Motion>", self.on_square_drag)
+        self.canvas.bind("<ButtonRelease-1>", self.on_square_release)
 
         self.draw_grid()
 
-        self.btn = tk.Button(self.root, text='Find Shortest Path', command=self.find_shortest_path)
+        self.btn = tk.Button(
+            self.root, text="Find Shortest Path", command=self.find_shortest_path
+        )
         self.btn.pack()
 
         self.root.mainloop()
@@ -46,40 +53,59 @@ class GridApp:
                 if self.square_states[i][j]:
                     color = OBSTACLE_NODE_COLOR
                 else:
-                    color = PATH_NODE_COLOR if self.path_squares[i][j] else DEFAULT_NODE_COLOR
+                    color = (
+                        PATH_NODE_COLOR
+                        if self.path_squares[i][j]
+                        else DEFAULT_NODE_COLOR
+                    )
 
                 if (i, j) == self.source_node:
                     color = SOURCE_NODE_COLOR
                 if (i, j) == self.destination_node:
                     color = DESTINATION_NODE_COLOR
 
-                self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline='black')
+                self.canvas.create_rectangle(
+                    x1, y1, x2, y2, fill=color, outline="black"
+                )
 
     def on_square_click(self, event):
         x = event.x // self.square_size
         y = event.y // self.square_size
-        if (x, y) not in [self.source_node, self.destination_node]:  # Skip if clicked square is source or destination node
+        if (x, y) not in [
+            self.source_node,
+            self.destination_node,
+        ]:  # Skip if clicked square is source or destination node
             self.square_states[x][y] = not self.square_states[x][y]
         else:
             if (x, y) == self.source_node:
                 self.is_dragging_source = True
             else:
                 self.is_dragging_destination = True
-        self.canvas.delete('all')
+        self.canvas.delete("all")
         self.draw_grid()
 
     def on_square_drag(self, event):
         if self.is_dragging_source:
             x = event.x // self.square_size
             y = event.y // self.square_size
-            if 0 <= x < self.n and 0 <= y < self.m and not self.square_states[x][y] and (x, y) != self.destination_node:
+            if (
+                0 <= x < self.n
+                and 0 <= y < self.m
+                and not self.square_states[x][y]
+                and (x, y) != self.destination_node
+            ):
                 self.source_node = (x, y)
         elif self.is_dragging_destination:
             x = event.x // self.square_size
             y = event.y // self.square_size
-            if 0 <= x < self.n and 0 <= y < self.m and not self.square_states[x][y] and (x, y) != self.source_node:
+            if (
+                0 <= x < self.n
+                and 0 <= y < self.m
+                and not self.square_states[x][y]
+                and (x, y) != self.source_node
+            ):
                 self.destination_node = (x, y)
-        self.canvas.delete('all')
+        self.canvas.delete("all")
         self.draw_grid()
 
     def on_square_release(self, event):
@@ -98,7 +124,7 @@ class GridApp:
 
         while True:
             # Find the node with the smallest distance that has not been visited
-            min_dist = float('inf')
+            min_dist = float("inf")
             min_node = None
             for i in range(self.n):
                 for j in range(self.m):
@@ -140,18 +166,20 @@ class GridApp:
             for node in path:
                 self.path_squares[node[0]][node[1]] = True
 
-            self.canvas.delete('all')
+            self.canvas.delete("all")
             self.draw_grid()
         else:
-            messagebox.showinfo("No Path Found", "No path found from source to destination.")
+            messagebox.showinfo(
+                "No Path Found", "No path found from source to destination."
+            )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--width', type=int, help='width of the rectangle')
-    parser.add_argument('--height', type=int, help='height of the rectangle')
+    parser.add_argument("--width", type=int, help="width of the rectangle")
+    parser.add_argument("--height", type=int, help="height of the rectangle")
     args = parser.parse_args()
 
     if args.width and args.height:
@@ -159,4 +187,4 @@ if __name__ == '__main__':
         m = args.height  # Number of columns
         app = GridApp(n, m)
     else:
-        print('Please provide both width and height.')
+        print("Please provide both width and height.")
